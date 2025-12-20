@@ -23,11 +23,6 @@ export default function HomeScene({
   const font =
     "https://cdn.jsdelivr.net/fontsource/fonts/orbitron@latest/latin-700-normal.woff";
 
-  // Door geometry constants (must match values in Door)
-  const DOOR_HALF_WIDTH = 0.45; // each door half width
-  const DOOR_FULL_WIDTH = DOOR_HALF_WIDTH * 2.0; // full door width
-  const DOOR_HEIGHT = 1.0; // door full height
-
   // Notify parent immediately when the door starts opening (phase === 'drop')
   useEffect(() => {
     if (phase === "drop" && !doorOpenedRef.current) {
@@ -249,7 +244,7 @@ export default function HomeScene({
             <LuckyAnimation
               active={true}
               baseZ={baseZ}
-              count={20}
+              count={30}
               spacing={1.8}
             />
           ) : null;
