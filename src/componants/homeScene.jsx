@@ -4,17 +4,29 @@ import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { useFrame } from "@react-three/fiber";
 import { ShaderMaterial, DoubleSide } from "three";
 import Door from "./door";
+import LuckyAnimation from "./LuckyAnimation";
 export default function HomeScene({
   phase,
   onApproachComplete,
   doorOpenDelay,
   onDoorOpen,
+  selectedSong,
+  isPlaying,
 }) {
   const cameraRef = useRef();
   const timerRef = useRef(0);
   const box = useRef();
   const doorOpenedRef = useRef(false);
-  const font = "https://cdn.jsdelivr.net/fontsource/fonts/orbitron@latest/latin-700-normal.woff";
+  const playStartRef = useRef(null);
+  const prevIsPlayingRef = useRef(false);
+  const [showSecondWall, setShowSecondWall] = useState(false);
+  const font =
+    "https://cdn.jsdelivr.net/fontsource/fonts/orbitron@latest/latin-700-normal.woff";
+
+  // Door geometry constants (must match values in Door)
+  const DOOR_HALF_WIDTH = 0.45; // each door half width
+  const DOOR_FULL_WIDTH = DOOR_HALF_WIDTH * 2.0; // full door width
+  const DOOR_HEIGHT = 1.0; // door full height
 
   // Notify parent immediately when the door starts opening (phase === 'drop')
   useEffect(() => {
@@ -42,9 +54,37 @@ export default function HomeScene({
     if (phase === "drop" && cameraRef.current) {
       cameraRef.current.position.z -= delta * 4; // Speed up after drop!
     }
-    // if (isPlaying && cameraRef.current) {
-    //   cameraRef.current.position.z -= delta * 2; // Move forward; adjust speed
-    // }
+
+    // Keep track of play start time to measure intro duration
+    if (isPlaying && !prevIsPlayingRef.current) {
+      prevIsPlayingRef.current = true;
+      playStartRef.current = performance.now();
+      // When playback starts, reset second wall visibility until intro end
+      setShowSecondWall(false);
+    }
+    if (!isPlaying && prevIsPlayingRef.current) {
+      prevIsPlayingRef.current = false;
+      playStartRef.current = null;
+      setShowSecondWall(false);
+    }
+
+    // When Lucky is playing, determine if intro (first 4 bars) has finished
+    if (
+      isPlaying &&
+      selectedSong &&
+      selectedSong.name === "Lucky" &&
+      playStartRef.current
+    ) {
+      const elapsed = (performance.now() - playStartRef.current) / 1000; // seconds
+      const bars = 4; // first 4 bars
+      const beatsPerBar = 4;
+      const introDuration =
+        (bars * beatsPerBar * 60) / (selectedSong.bpm || 120); // seconds
+
+      if (elapsed >= introDuration) {
+        if (!showSecondWall) setShowSecondWall(true);
+      }
+    }
   });
 
   return (
@@ -98,7 +138,7 @@ export default function HomeScene({
 
       {/* "TRACK" Text */}
       <Text
-        position={[0, 0, 0.13]}
+        position={[0, 0, 0.1]}
         fontSize={1.5}
         color="red"
         anchorX="center"
@@ -109,7 +149,7 @@ export default function HomeScene({
       </Text>
 
       <Text
-        position={[-1.3, 0, 0.13]}
+        position={[-1.3, 0, 0.1]}
         fontSize={1.5}
         color="red"
         anchorX="center"
@@ -120,7 +160,7 @@ export default function HomeScene({
       </Text>
 
       <Text
-        position={[1.4, 0, 0.13]}
+        position={[1.4, 0, 0.1]}
         fontSize={1.5}
         color="red"
         anchorX="center"
@@ -130,23 +170,36 @@ export default function HomeScene({
         M
       </Text>
 
-      <Door position={[0, 0, -0.5]} isOpen={phase === "drop"} />
+      <Door position={[0, 0, 0]} isOpen={phase === "drop"} />
 
-     
-      <mesh ref={box} position={[0, 0, -20]}>
+      {/* <mesh ref={box} position={[0, 0, -20]}>
         <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color={"#ff0000"}/>
-      </mesh>
+        <meshStandardMaterial color={"#ff0000"} />
+      </mesh> */}
 
-      {/* Background Plane with Center Hole */}
-      <mesh position={[0, 0, -100]} scale={[250, 250, 1]} frustumCulled={false}>
+      {/* Background Plane (fully opaque black, always behind) */}
+      <mesh
+        position={[0, 0, -0.01]}
+        scale={[250, 250, 1]}
+        frustumCulled={false}
+        renderOrder={-2}
+      >
         <planeGeometry args={[1, 1]} />
-        <meshBasicMaterial 
-          color="#000000" 
+        <meshBasicMaterial
+          color="#000000"
           depthWrite={true}
-        />  
+          depthTest={true}
+          transparent={false}
+          opacity={1}
+          side={DoubleSide}
+        />
       </mesh>
-      <mesh position={[0, 0, 0]} scale={[200, 200, 1]} renderOrder={-1} frustumCulled={false}>
+      <mesh
+        position={[0, 0, -0.01]}
+        scale={[200, 200, 1]}
+        renderOrder={-1}
+        frustumCulled={false}
+      >
         <planeGeometry args={[1, 1, 1, 1]} />
         <shaderMaterial
           side={DoubleSide}
@@ -166,7 +219,8 @@ export default function HomeScene({
             varying vec2 vUv;
             void main() {
               vec2 centered = vUv - 0.5;
-              float width = 0.4 / 2.0;
+              // widened hole to match door width
+              float width = 0.9 / 2.0;
               float height = 1.0 / 1.2;
               
               // Check if pixel is within the hole (door opening)
@@ -181,12 +235,32 @@ export default function HomeScene({
         />
       </mesh>
 
+      {/* Lucky intro animation (stationary, visible only through the hole & behind the door) */}
+      {selectedSong &&
+        selectedSong.name === "Lucky" &&
+        (() => {
+          // place the wormhole slightly behind the door at z = -6 so it is only visible through the hole
+          const baseZ = -6;
+          // introActive: isPlaying and less than 4 bars
+          const introDuration = (4 * 4 * 60) / (selectedSong.bpm || 120);
+          const elapsed = (performance.now() - playStartRef.current) / 1000;
+          const introActive = elapsed < introDuration;
+          return introActive ? (
+            <LuckyAnimation
+              active={true}
+              baseZ={baseZ}
+              count={20}
+              spacing={1.8}
+            />
+          ) : null;
+        })()}
+
       {/* Post-processing for Neon Glow */}
       <EffectComposer>
         <Bloom
           luminanceThreshold={0.1}
           luminanceSmoothing={0.9}
-          intensity={15}
+          intensity={20}
         />
       </EffectComposer>
 

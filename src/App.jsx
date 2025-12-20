@@ -11,6 +11,13 @@ function App() {
 
   const songs = [
     {
+      name: "Lucky",
+      path: "/songs/MORTEN & David Guetta - Lucky (Extended Mix).mp3",
+      doorOpenDelay: 2,
+      artist: "David Guetta",
+      thumbnail: "/thumbnails/lucky.jpg",
+    },
+    {
       name: "Rumble",
       path: "/songs/Rumble.mp3",
       doorOpenDelay: 2,
@@ -22,29 +29,21 @@ function App() {
       path: "/songs/David_Guetta___MORTEN_-_The_Future_Is_Now_[Visualizer](128k).mp3",
       doorOpenDelay: 2,
       artist: "David Guetta",
-      thumbnail: "/thumbnails/futureisnow.jpg"
-    },
-    {
-      name: "Lucky",
-      path: "/songs/MORTEN & David Guetta - Lucky (Extended Mix).mp3",
-      doorOpenDelay: 2,
-      artist: "David Guetta",
-      thumbnail: "/thumbnails/lucky.jpg"
+      thumbnail: "/thumbnails/futureisnow.jpg",
     },
     {
       name: "Night In Detroit",
       path: "/songs/MORTEN & David Guetta - Night In Detroit (feat. Fedde Le Grand) [Extended Mix].mp3",
       doorOpenDelay: 2,
       artist: "David Guetta",
-      thumbnail: "/thumbnails/nightindetroit.jpg"
+      thumbnail: "/thumbnails/nightindetroit.jpg",
     },
     {
       name: "DA BASS",
       path: "/songs/R3HAB___Vion_Konger_-_DA_BASS__Extended_Mix_(128k).m4a",
       doorOpenDelay: 2,
       artist: "R3HAB",
-      thumbnail: "/thumbnails/dabass.jpg"
-
+      thumbnail: "/thumbnails/dabass.jpg",
     },
     // Add your EDM tracks here
   ];
@@ -147,7 +146,7 @@ function App() {
         padding: 0,
         overflow: "hidden", // Prevent scrollbars
         position: "relative",
-        background: "none",
+        background: "black",
       }}
     >
       <Canvas
@@ -164,6 +163,7 @@ function App() {
           onApproachComplete={triggerDrop} // Called after delay
           doorOpenDelay={selectedSong.doorOpenDelay}
           onDoorOpen={handleDoorOpen}
+          selectedSong={selectedSong}
         />
       </Canvas>
 
