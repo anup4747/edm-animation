@@ -10,8 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/fiber": "^9.6.1",
+    "@tailwindcss/postcss": "^4.3.2",
+    "gsap": "^3.15.0",
+    "postcss": "^8.5.16",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "simplex-noise": "^4.0.3",
+    "tailwindcss": "^4.3.2",
     "three": "^0.165.0"
   },
   "devDependencies": {
