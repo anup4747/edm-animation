@@ -6,16 +6,16 @@ import { createNoise3D } from "simplex-noise";
 const noise = createNoise3D();
 
 function Wave() {
-  const width = 180;
-  const depth = 180;
-  const spacing = 0.18;
+  const width = 450;
+  const depth = 450;
+  const spacing = 0.19;
 
   //   learn useMemo
   const geometry = useMemo(() => {
     const positions = [];
 
-    for (let x = -width / 2; x < width / 2; x++) {
-      for (let z = -depth / 2; z < depth / 2; z++) {
+    for (let x = -width / 4; x < width / 4; x++) {
+      for (let z = -depth / 4; z < depth / 4; z++) {
         positions.push(x * spacing, 0, z * spacing);
       }
     }
@@ -50,8 +50,8 @@ function Wave() {
   });
 
   return (
-    <points geometry={geometry} rotation={[-Math.PI / 2.8, 0, 0]}>
-      <pointsMaterial color="white" size={0.035} sizeAttenuation />
+    <points geometry={geometry} rotation={[-Math.PI / 22.8, 0, 0]}>
+      <pointsMaterial color="red" size={0.05} sizeAttenuation />
     </points>
   );
 }
@@ -60,11 +60,13 @@ export default function WaveBackground() {
   return (
     <Canvas
       camera={{
-        position: [0, 6, 10],
+        position: [0, 4, 6],
         fov: 45,
       }}
     >
       <color attach="background" args={["black"]} />
+
+      <fog attach="fog" args={["black", 12, 15]} />
 
       <Wave />
     </Canvas>
