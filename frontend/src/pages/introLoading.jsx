@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import WaveBackground from "../componants/waveBackground";
 
-const LoadingScreen = () => {
+const LoadingScreen = ({ onComplete }) => {
   const progressRef = useRef(null);
   const glowRef = useRef(null);
   const lastBinaryUpdateRef = useRef(0);
+  const completedRef = useRef(false);
 
   const [percent, setPercent] = useState(0);
   const [binaryCode, setBinaryCode] = useState(
@@ -48,8 +49,16 @@ const LoadingScreen = () => {
           left: `${easedValue}%`,
         });
       },
+      onComplete: () => {
+        if (!completedRef.current) {
+          completedRef.current = true;
+          setPercent(100);
+          setBinaryCode(generateBinaryCode(100));
+          window.setTimeout(() => onComplete?.(), 350);
+        }
+      },
     });
-  }, []);
+  }, [onComplete]);
 
   return (
     <div className="loader-container">
