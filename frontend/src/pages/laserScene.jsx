@@ -2,7 +2,12 @@ import { Suspense, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
-import { MeshBasicMaterial } from "three";
+import {
+  EdgesGeometry,
+  LineBasicMaterial,
+  LineSegments,
+  MeshBasicMaterial,
+} from "three";
 
 const laserModelUrl = new URL(
   "../assets/3d componants/laser/source/laser.fbx",
@@ -25,6 +30,17 @@ function useFBXModel(url) {
             child.receiveShadow = true;
             child.material = new MeshBasicMaterial({ color: 0xaaaaaa });
             child.material.needsUpdate = true;
+
+            const edgeGeo = new EdgesGeometry(child.geometry, 15);
+            const edgeMat = new LineBasicMaterial({
+              color: 0x000000,
+              linewidth: 1,
+            });
+            const edgeLines = new LineSegments(edgeGeo, edgeMat);
+            edgeLines.renderOrder = 999;
+            edgeLines.material.depthTest = true;
+            edgeLines.material.depthWrite = false;
+            child.add(edgeLines);
           }
         });
 
@@ -57,8 +73,7 @@ function LaserModel() {
     <primitive
       object={fbx}
       scale={[0.014, 0.014, 0.014]}
-      position={[0, -1.3, 0]}
-      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, -1, 0]}
       color={["red"]}
     />
   );
@@ -93,7 +108,7 @@ function Room() {
 export default function LaserScene() {
   return (
     <div className="laser-scene-screen">
-      <Canvas camera={{ position: [5, -10, -10], fov: 40 }}>
+      <Canvas camera={{ position: [10, 10, -10], fov: 40 }}>
         <color attach="background" args={["#050505"]} />
         <fog attach="fog" args={["#050505", 8, 18]} />
         <Suspense fallback={null}>
