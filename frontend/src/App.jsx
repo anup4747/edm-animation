@@ -4,6 +4,7 @@ import LoadingScreen from "./pages/introLoading";
 import IntroTitle from "./pages/introTitle";
 import Home from "./pages/home";
 import Tracks from "./pages/tracks";
+import LaserScene from "./pages/laserScene";
 import Contact from "./pages/contact";
 import About from "./pages/about";
 import { Routes, Route } from "react-router-dom";
@@ -23,6 +24,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/tracks" element={<Tracks />} />
+      <Route path="/laser" element={<LaserScene />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
     </Routes>

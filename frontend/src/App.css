@@ -489,12 +489,55 @@ canvas {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.track-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
 .track-card .track-title {
   font-size: 0.95rem;
   letter-spacing: 0.26em;
   text-transform: uppercase;
+}
+
+.laser-scene-screen {
+  width: 100%;
+  min-height: 100vh;
+  height: 100vh;
+  position: relative;
+  background: #050505;
+}
+
+.laser-scene-ui {
+  position: absolute;
+  left: 28px;
+  top: 28px;
+  z-index: 2;
+  max-width: min(520px, 92vw);
+}
+
+.laser-back-button {
+  margin-bottom: 18px;
+}
+
+.laser-scene-copy {
+  padding: 20px;
+  border-radius: 24px;
+  background: rgba(5, 5, 10, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px);
+}
+
+.laser-scene-copy .page-title {
+  margin-top: 12px;
 }
 
 .track-card .track-meta {

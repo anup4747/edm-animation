@@ -6,16 +6,25 @@ const tracks = [
     title: "plam of my hand",
     meta: "06 · Ambient Pulse",
     desc: "A slow, luminous build that glows across the horizon.",
+    path: "/tracks",
   },
   {
     title: "Phase Line",
     meta: "09 · Digital Echo",
     desc: "High-energy motion with clipped rhythm and electric texture.",
+    path: "/tracks",
   },
   {
     title: "Signal Bloom",
     meta: "12 · Halo Bass",
     desc: "Warm undercurrent shaped by a sharp, synthetic flare.",
+    path: "/tracks",
+  },
+  {
+    title: "Sleepless Night",
+    meta: "01 · Martin Garrix x Armin van Buuren",
+    desc: "Open the laser chamber with this live visual entry.",
+    path: "/laser",
   },
 ];
 
@@ -57,11 +66,15 @@ export default function Tracks() {
 
         <div className="track-list">
           {tracks.map((track) => (
-            <div key={track.title} className="glass-panel track-card">
+            <Link
+              key={track.title}
+              to={track.path}
+              className="glass-panel track-card"
+            >
               <div className="track-title">{track.title}</div>
               <div className="track-meta">{track.meta}</div>
               <p className="track-desc">{track.desc}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
